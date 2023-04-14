@@ -1,0 +1,5 @@
+#+title: Tim Toady
+
+Tim Toady is a simple program to run CI pipelines. It was primarily
+written for Raku Documentation project. It is maintained by the Raku
+Infra team.
