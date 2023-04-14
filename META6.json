@@ -1,0 +1,19 @@
+{
+    "name": "timtoady",
+    "auth": "zef:andinus",
+    "version": "v0.1.0",
+    "description": "Tim Toady is a simple program to run CI pipelines"
+    "authors": ["Andinus <andinus@nand.sh>"],
+    "license": "ISC",
+    "perl": "6.d",
+    "provides": {
+        "TimToady::Routes": "lib/TimToady/Routes.rakumod"
+    },
+    "depends": [
+        "Cro::HTTP",
+        "Template::Nest::Fast",
+        "Crypt::SodiumPasswordHash"
+    ],
+    "tags": ["ci-pipeline"],
+    "source-url": "https://github.com/andinus/timtoady",
+}
