@@ -1,0 +1,11 @@
+host = "127.0.0.1"
+port = 10337
+
+[project]
+[project.raku-doc]
+name = "Raku Doc"
+
+[project.raku-doc.post-event]
+#If this is left empty then no validation is performed.
+# https://docs.github.com/en/webhooks-and-events/webhooks/securing-your-webhooks
+secret_token = ""
