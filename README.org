@@ -1,5 +1,17 @@
-#+title: Tim Toady
+#+title: TimToady
 
-Tim Toady is a simple program to run CI pipelines. It was primarily
+TimToady is a program to run Raku Infra CI pipelines. It was primarily
 written for Raku Documentation project. It is maintained by the Raku
 Infra team.
+
+Note: This is a work in-progress.
+
+* Setup
+
++ Create a database with ~resources/schema.sql~.
++ Add DB credentials to config file.
++ Install dependencies
+
+  #+begin_src bash
+zef install . --deps-only
+  #+end_src

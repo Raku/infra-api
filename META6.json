@@ -2,18 +2,25 @@
     "name": "timtoady",
     "auth": "zef:andinus",
     "version": "v0.1.0",
-    "description": "Tim Toady is a simple program to run CI pipelines"
-    "authors": ["Andinus <andinus@nand.sh>"],
+    "description": "Tim Toady is a simple program to run Raku Infra CI pipelines",
+    "authors": [ "Andinus <andinus@nand.sh>" ],
     "license": "ISC",
     "perl": "6.d",
     "provides": {
-        "TimToady::Routes": "lib/TimToady/Routes.rakumod"
+        "TimToady::Service": "lib/TimToady/Service.rakumod",
+        "TimToady::Routes": "lib/TimToady/Routes.rakumod",
+        "TimToady::Routes::Webhook": "lib/TimToady/Routes/Webhook.rakumod"
     },
     "depends": [
         "Cro::HTTP",
-        "Template::Nest::Fast",
-        "Crypt::SodiumPasswordHash"
+        "Template::Nest::Fast:auth<zef:andinus>",
+        "TOML:ver<3>:auth<zef:tony-o>",
+        "Digest::SHA2",
+        "Digest::HMAC:auth<zef:jjmerelo>"
     ],
-    "tags": ["ci-pipeline"],
-    "source-url": "https://github.com/andinus/timtoady",
+    "tags": [
+        "ci-pipeline",
+        "raku-infra"
+    ],
+    "source-url": "https://github.com/andinus/timtoady"
 }
