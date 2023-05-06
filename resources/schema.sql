@@ -4,9 +4,11 @@ CREATE TABLE IF NOT EXISTS task(
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     created TIMESTAMP WITH TIME ZONE DEFAULT now()
     status task_status NOT NULL DEFAULT 'todo',
-    completed TIMESTAMP WITH TIME ZONE
+    completed TIMESTAMP WITH TIME ZONE,
+    detail JSONB NOT NULL
 );
 
+-- capture_func executes a NOTIFY. it is used to listen on new row insertions.
 CREATE FUNCTION capture_func()
 RETURNS trigger AS
 $$
