@@ -9,18 +9,21 @@
     "provides": {
         "TimToady::Service": "lib/TimToady/Service.rakumod",
         "TimToady::Routes": "lib/TimToady/Routes.rakumod",
-        "TimToady::Routes::Webhook": "lib/TimToady/Routes/Webhook.rakumod"
+        "TimToady::Routes::Webhook": "lib/TimToady/Routes/Webhook.rakumod",
+        "TimToady::TaskRunner": "lib/TimToady/TaskRunner.rakumod"
     },
     "depends": [
         "Cro::HTTP",
         "Template::Nest::Fast:auth<zef:andinus>",
         "TOML:ver<3>:auth<zef:tony-o>",
         "Digest::SHA2",
-        "Digest::HMAC:auth<zef:jjmerelo>"
+        "Digest::HMAC:auth<zef:jjmerelo>",
+        "DBIish::Pool",
+        "Pg::Notify",
+        "JSON::Fast"
     ],
     "tags": [
-        "ci-pipeline",
-        "raku-infra"
+        "ci-pipeline", "raku-infra"
     ],
     "source-url": "https://github.com/andinus/timtoady"
 }
