@@ -4,9 +4,15 @@ description = "Deployed by Raku Infra Team to handle Raku Doc builds."
 host = "127.0.0.1"
 port = 10337
 
+db-name = ""
+db-user = ""
+db-pass = ""
+
 [raku-doc]
 name = "Raku Doc"
 description = "build raku-doc on push event"
+
+full-name = "andinus/doc"
 
 # https://docs.github.com/en/webhooks-and-events/webhooks/securing-your-webhooks
 secret-token = ""

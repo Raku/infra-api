@@ -1,4 +1,5 @@
 use TOML;
+use DBIish::Pool;
 use Cro::HTTP::Server;
 use Template::Nest::Fast;
 
@@ -15,11 +16,20 @@ sub MAIN() is export {
     my $config = from-toml $timtoady-config.slurp;
     my $nest = Template::Nest::Fast.new: :$template-dir;
 
+    my $pool = DBIish::Pool.new(
+        driver => 'Pg',
+        |%(
+            database => $config<db-name>,
+            user => $config<db-user>,
+            password => $config<db-pass>,
+        )
+    );
+
     my Cro::Service $http = Cro::HTTP::Server.new(
         http => <1.1>,
         host => $config<host>,
         port => $config<port>,
-        application => routes(:$config),
+        application => routes(:$config, :$pool),
         :allowed-methods<GET POST>,
         body-parsers => [
                          # Don't parse any kind of body except a JSON one; anything else
@@ -32,7 +42,7 @@ sub MAIN() is export {
     put "Listening at http://{$config<host>}:{$config<port>}";
     react {
         whenever signal(SIGINT) {
-            say "Shutting down...";
+            put "Shutting down...";
             $http.stop;
             done;
         }
