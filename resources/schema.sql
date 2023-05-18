@@ -1,18 +1,21 @@
 CREATE TYPE task_status AS ENUM ('todo', 'in-progress', 'done', 'failed');
 CREATE TYPE task_type AS ENUM ('raku-doc-push');
 
+-- task table holds all the tasks.
 CREATE TABLE IF NOT EXISTS task(
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    created TIMESTAMP WITH TIME ZONE DEFAULT now(),
 
+    -- timestamps.
+    created TIMESTAMP WITH TIME ZONE DEFAULT now(),
     started TIMESTAMP WITH TIME ZONE,
     completed TIMESTAMP WITH TIME ZONE,
 
+    -- task_type is for the taskrunner to differentiate tasks.
     status task_status NOT NULL DEFAULT 'todo',
     type task_type NOT NULL DEFAULT 'raku-doc-push',
 
     detail JSONB NOT NULL,
-    pid INTEGER,
+    pid INTEGER, -- for taskrunner recordkeeping.
 
     priority SMALLINT DEFAULT 0,
 
