@@ -8,7 +8,7 @@ set -e
 set -o errexit
 set -o nounset
 # SCRIPT_PATH="$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd -P)"
-function die() {
+function die {
     echo "ERROR $? IN ${BASH_SOURCE[0]} AT LINE ${BASH_LINENO[0]}" 1>&2
     exit 1
 }
@@ -16,13 +16,20 @@ trap die ERR
 
 TEMP_DIR="$(mktemp -d)"
 DOC_SRC="https://github.com/andinus/doc"
-OUTPUT_DIR="/var/www/unfla.me.raku-doc-*"
+OUTPUT_DIR="/var/www/unfla.me.oxygen.raku-doc.*"
 
 function cleanup {
     printf '\n=> %s %s\n' "$(date)" "cleaning up."
     rm -frv "$TEMP_DIR"
 }
 trap cleanup EXIT
+
+printf '\n=> %s %s\n' "$(date)" "git --version."
+git --version
+printf '\n=> %s %s\n' "$(date)" "raku --version."
+raku --version
+printf '\n=> %s %s\n' "$(date)" "zef --version."
+zef --version
 
 if [ ! -d "$OUTPUT_DIR" ]; then
     printf '\n=> %s %s\n' "$(date)" "output directory does not exist: $OUTPUT_DIR" 1>&2
@@ -33,6 +40,12 @@ if [ -z "$TIMTOADY_RAKU_DOC_CHECKOUT" ]; then
     printf '\n=> %s %s\n' "$(date)" "TIMTOADY_RAKU_DOC_CHECKOUT was not set." 1>&2
     exit 1
 fi
+
+if [ -d "$OUTPUT_DIR/$TIMTOADY_RAKU_DOC_CHECKOUT" ]; then
+    printf '\n=> %s %s\n' "$(date)" "build output already exists: $OUTPUT_DIR/$TIMTOADY_RAKU_DOC_CHECKOUT"
+    exit 0
+fi
+
 
 cd "$TEMP_DIR"
 
