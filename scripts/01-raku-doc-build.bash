@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # 01-raku-doc-build.bash is a bash script that builds raku doc website given
-# TIMTOADY_RAKU_DOC_CHECKOUT.
+# $1 set to the commit to checkout.
 
 set -e
 
@@ -17,6 +17,7 @@ trap die ERR
 TEMP_DIR="$(mktemp -d)"
 DOC_SRC="https://github.com/andinus/doc"
 OUTPUT_DIR="/var/www/unfla.me.oxygen.raku-doc.*"
+RENDER_DIR="$OUTPUT_DIR/$1"
 
 function cleanup {
     printf '\n=> %s %s\n' "$(date)" "cleaning up."
@@ -36,16 +37,10 @@ if [ ! -d "$OUTPUT_DIR" ]; then
     exit 1
 fi
 
-if [ -z "$TIMTOADY_RAKU_DOC_CHECKOUT" ]; then
-    printf '\n=> %s %s\n' "$(date)" "TIMTOADY_RAKU_DOC_CHECKOUT was not set." 1>&2
-    exit 1
-fi
-
-if [ -d "$OUTPUT_DIR/$TIMTOADY_RAKU_DOC_CHECKOUT" ]; then
-    printf '\n=> %s %s\n' "$(date)" "build output already exists: $OUTPUT_DIR/$TIMTOADY_RAKU_DOC_CHECKOUT"
+if [ -d "$RENDER_DIR" ]; then
+    printf '\n=> %s %s\n' "$(date)" "build output already exists: $RENDER_DIR"
     exit 0
 fi
-
 
 cd "$TEMP_DIR"
 
@@ -74,9 +69,9 @@ printf '\n=> %s %s\n' "$(date)" "cloning documentation source."
 git clone "$DOC_SRC" local_raku_docs/
 
 # checkout to desired build of documentation.
-printf '\n=> %s %s\n' "$(date)" "checkout to desired build: $TIMTOADY_RAKU_DOC_CHECKOUT."
+printf '\n=> %s %s\n' "$(date)" "checkout to desired build: $1."
 cd local_raku_docs
-git checkout "$TIMTOADY_RAKU_DOC_CHECKOUT"
+git checkout "$1"
 cd ../
 
 printf '\n=> %s %s\n' "$(date)" "building documentation."
@@ -84,9 +79,9 @@ bin_files/build-site --no-status --without-completion
 printf '\n=> %s %s\n' "$(date)" "build complete."
 
 printf '\n=> %s %s\n' "$(date)" "deploying build."
-mkdir "$OUTPUT_DIR/$TIMTOADY_RAKU_DOC_CHECKOUT/"
-cp -vr rendered_html/* "$OUTPUT_DIR/$TIMTOADY_RAKU_DOC_CHECKOUT/"
+mkdir "$RENDER_DIR/"
+cp -vr rendered_html/* "$RENDER_DIR/"
 
-cd "$OUTPUT_DIR/$TIMTOADY_RAKU_DOC_CHECKOUT/"
+cd "$RENDER_DIR/"
 find . -type d -exec chmod 755 {} \; ; find . -type f -exec chmod 644 {} \; ;
 printf '\n=> %s %s\n' "$(date)" "deployed."

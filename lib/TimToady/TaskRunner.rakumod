@@ -24,6 +24,7 @@ sub MAIN() is export {
 
     my IO $timtoady-config = 'resources/config.toml'.IO;
     die "Config file does not exist: {$timtoady-config.absolute}" unless $timtoady-config.f;
+    die "log directory doesn't exist." unless '.logs'.IO.d;
 
     my $config = from-toml $timtoady-config.slurp;
     my $pool = DBIish::Pool.new(
@@ -74,57 +75,55 @@ sub MAIN() is export {
                  FOR UPDATE SKIP LOCKED;"
             );
             with $sth.row(:hash) -> %task {
-                put "{DateTime.now} Starting task: {%task<id type>.gist}";
-                run-task(%task<type>, %task, :$dbh, :$config);
-                put "{DateTime.now} Completed task: {%task<id type>.gist}";
+                put "{DateTime.now} [{%task<id>}]: Start.";
+                run-task(%task, :$dbh, :$config);
+                put "{DateTime.now} [{%task<id>}]: Complete";
             }
             $tasks ⚛= $dbh.execute("SELECT COUNT(id) FROM task WHERE status = 'todo';").row(:hash)<count>;
         }
     }
 }
 
-multi sub run-task('raku-doc-push', %task, :$dbh, :$config) {
-    my $log-file = $config<webroot>.IO.add(%task<id> ~ '.txt');
+multi sub run-task(%task, :$dbh, :$config) {
+    my $log-file = '.logs'.IO.add(%task<id> ~ '.txt');
 
-    my $action-handle = open :x, $log-file;
-    LEAVE .close with $action-handle;
+    # Output will be saved to this log file.
+    my $handle = open :x, $log-file;
+    LEAVE .close with $handle;
 
-    my $output-dir = "/var/www/unfla.me.neon.raku-doc-builds/".IO.add(%task<id>);
-    mkdir $output-dir, 0o755;
-
+    my $proc;
     my %event = from-json %task<detail>;
-    my $action-proc = Proc::Async.new(
-        "scripts/10-raku-doc-latest.raku", %event<after>, $output-dir.absolute
-    );
-    $action-proc.bind-stdout($action-handle);
-    $action-proc.bind-stderr($action-handle);
 
-    react {
-        whenever $action-proc.ready {
-            $dbh.execute(
-                "UPDATE task SET status = 'in-progress', started = now(), pid = ? WHERE id = ?;",
-                $_, %task<id>
-            );
+    given %task<type> {
+        when 'raku-doc-push' {
+            $proc = Proc::Async.new("scripts/01-raku-doc-latest.bash", %event<after>);
         }
-        whenever $action-proc.start {
-            $dbh.execute(
-                'UPDATE task SET completed = now(), status = ? WHERE id = ?',
-                (.exitcode == 0 ?? 'done' !! 'failed'), %task<id>
-            );
-            done # gracefully jump from the react block
-        }
-        whenever signal(SIGTERM).merge: signal(SIGINT) {
-            die "Received SIGTERM/SIGINT...";
+        default {
+            die "[{%task<id type>.gist}]: Cannot handle this type of task.";
         }
     }
 
+    # Bind output.
+    $proc.bind-stdout($handle);
+    $proc.bind-stderr($handle);
+
+    my $promise = $proc.start;
+
+    with await $proc.pid -> Int $pid {
+        $dbh.execute(
+            "UPDATE task SET status = 'in-progress', started = now(), pid = ? WHERE id = ?;",
+            $pid, %task<id>
+        );
+    }
+
+    sink try await $promise;
+
     CATCH {
-        put $_.raku;
         $dbh.execute(
             'UPDATE task SET completed = now(), status = ?, pid = NULL WHERE id = ?;',
             "failed", %task<id>
         );
-        put "[Task: {%task<id>}] Kill it!";
-        $action-proc.kill: SIGKILL
+        put "[{%task<id>}]: Kill it! :: {$_}";
+        $proc.kill: SIGKILL
     }
 }
