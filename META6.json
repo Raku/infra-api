@@ -25,5 +25,5 @@
     "tags": [
         "ci-pipeline", "raku-infra"
     ],
-    "source-url": "https://github.com/andinus/timtoady"
+    "source-url": "https://github.com/raku/infra-api"
 }
