@@ -30,6 +30,7 @@ sub MAIN() is export {
     my $pool = DBIish::Pool.new(
         driver => 'Pg',
         |%(
+            host => $config<db-host>,
             database => $config<db-name>,
             user => $config<db-user>,
             password => $config<db-pass>,
