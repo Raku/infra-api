@@ -4,6 +4,7 @@ description = "Deployed by Raku Infra Team to handle Raku Doc builds."
 host = "127.0.0.1"
 port = 10337
 
+db-host = ""
 db-name = ""
 db-user = ""
 db-pass = ""
