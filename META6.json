@@ -8,9 +8,12 @@
     "perl": "6.d",
     "provides": {
         "TimToady::Service": "lib/TimToady/Service.rakumod",
+        "TimToady::Config": "lib/TimToady/Config.rakumod",
         "TimToady::Routes": "lib/TimToady/Routes.rakumod",
         "TimToady::Routes::Webhook": "lib/TimToady/Routes/Webhook.rakumod",
-        "TimToady::TaskRunner": "lib/TimToady/TaskRunner.rakumod"
+        "TimToady::TaskRunner": "lib/TimToady/TaskRunner.rakumod",
+        "TimToady::Session": "lib/TimToady/Session.rakumod",
+        "TimToady::Migration": "lib/TimToady/Migration.rakumod"
     },
     "depends": [
         "Cro::HTTP",

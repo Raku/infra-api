@@ -1,0 +1,23 @@
+#!/usr/bin/env raku
+
+use DBIish::Pool;
+use TimToady::Config;
+use TimToady::Migration;
+
+sub MAIN() {
+	my $config = load-config;
+    my $pool = DBIish::Pool.new(
+        driver => 'Pg',
+        |%(
+            host => $config<db-host>,
+            database => $config<db-name>,
+            user => $config<db-user>,
+            password => $config<db-pass>,
+        )
+    );
+    my $dbh = $pool.get-connection();
+    my $migrator = Migration.new(
+        dbh => $dbh, 
+        migration-file => "resources/migration.sql", verbose => True);
+    $migrator.migrate;
+}

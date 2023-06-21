@@ -2,6 +2,7 @@ use TOML;
 use JSON::Fast;
 use Pg::Notify;
 use DBIish::Pool;
+use TimToady::Config;
 
 constant $running-env = "$*HOME/.timtoady-taskrunner-pid";
 
@@ -22,11 +23,9 @@ sub MAIN() is export {
     # Write pid to $running-env file.
     $running-env.IO.spurt($*PID);
 
-    my IO $timtoady-config = 'resources/config.toml'.IO;
-    die "Config file does not exist: {$timtoady-config.absolute}" unless $timtoady-config.f;
     die "log directory doesn't exist." unless '.logs'.IO.d;
 
-    my $config = from-toml $timtoady-config.slurp;
+    my $config = load-config;
     my $pool = DBIish::Pool.new(
         driver => 'Pg',
         |%(
