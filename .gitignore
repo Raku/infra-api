@@ -4,7 +4,10 @@
 .precomp/
 node_modules/
 
-# Backup files
+# Backup files, editor metadata
 *~
+.idea/
 
+# Potentially sensitive
 resources/config.toml
+
