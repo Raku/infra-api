@@ -6,13 +6,17 @@ create table if not exists public.task_process_log
     id      uuid default gen_random_uuid(),
     task_id uuid not null
         constraint task_process_log_task_id_fk
-            references public.task
+            references public.task,
+     data    bytea not null
 );
 
 comment on table public.task_process_log is 'log output captured from task subprocesses';
 
 comment on constraint task_process_log_task_id_fk on public.task_process_log is 'foreign key to task table';
 
+comment on column public.task_process_log.data is 'log data as bytes';
+
 -- 1 down # Example down migration
 
 drop table if exists task_process_log;
+
