@@ -82,6 +82,7 @@ sub MAIN() is export {
             }
             $tasks ⚛= $dbh.execute("SELECT COUNT(id) FROM task WHERE status = 'todo';").row(:hash)<count>;
         }
+        sleep 1;
     }
 }
 
