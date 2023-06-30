@@ -3,19 +3,17 @@ use DBIish::Pool;
 use Cro::HTTP::Server;
 use Template::Nest::Fast;
 
+use TimToady::Config;
 use TimToady::Routes;
 
 #| Tim Toady is a simple program to run Raku Infra CI pipelines.
 sub MAIN() is export {
-    my IO $timtoady-config = 'resources/config.toml'.IO;
-    die "Config file does not exist: {$timtoady-config.absolute}" unless $timtoady-config.f;
 
     my IO $template-dir = 'templates'.IO;
     die "Template directory does not exist: {$template-dir.absolute}" unless $template-dir.d;
 
-    my $config = from-toml $timtoady-config.slurp;
+    my $config = load-config;
     my $nest = Template::Nest::Fast.new: :$template-dir;
-
     my $pool = DBIish::Pool.new(
         driver => 'Pg',
         |%(

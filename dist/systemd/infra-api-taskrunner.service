@@ -1,0 +1,14 @@
+[Unit]
+Description=Raku infra-api taskrunner
+After=network.target
+
+[Service]
+User=infra-api
+Group=infra-api
+ExecStart=/var/lib/infra-api/rakudo/bin/raku -I /var/lib/infra-api/__current \
+    /var/lib/infra-api/__current/bin/taskrunner
+WorkingDirectory=/var/lib/infra-api/__current
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
