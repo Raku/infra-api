@@ -8,6 +8,8 @@ constant $running-env = "$*HOME/.timtoady-taskrunner-pid";
 #| TimToady::TaskRunner is a taskrunner made specifically for Raku Doc build
 #| tasks.
 sub MAIN() is export {
+    my &formatted-time = { DateTime.now.utc.truncated-to('minute') };
+
     # If running instance is detected, quit.
     if $running-env.IO.f {
         my Str $running-pid = $running-env.IO.slurp;
@@ -15,7 +17,7 @@ sub MAIN() is export {
         sink $proc.out.slurp(:close);
 
         if $proc.exitcode == 0 {
-            put "{DateTime.now} Quit. Running instance detected...";
+            put "{formatted-time()} Quit. Running instance detected...";
             exit;
         }
     }
@@ -76,13 +78,15 @@ sub MAIN() is export {
                  FOR UPDATE SKIP LOCKED;"
             );
             with $sth.row(:hash) -> %task {
-                put "{DateTime.now} [{%task<id>}]: Start.";
+                put "{formatted-time()} [{%task<id>}]: Started";
                 run-task(%task, :$dbh, :$config);
-                put "{DateTime.now} [{%task<id>}]: Complete";
+                put "{formatted-time()} [{%task<id>}]: Completed";
             }
             $tasks ⚛= $dbh.execute("SELECT COUNT(id) FROM task WHERE status = 'todo';").row(:hash)<count>;
         }
-        sleep 1;
+
+        # sleep for some time before checking $tasks again.
+        sleep 30;
     }
 }
 
