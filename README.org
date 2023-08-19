@@ -8,7 +8,7 @@ Note: This is a work in-progress.
 
 * Setup
 
-+ Create a database with ~resources/schema.sql~.
++ Create a database with ~resources/migrations.sql~.
 + Add DB credentials to config file.
 + Install dependencies
 
